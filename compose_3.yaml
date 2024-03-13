@@ -1,0 +1,72 @@
+---
+- name: Instalación de servicios en Cli y Srv desde Router
+  hosts: router
+  tasks:
+    - name: Instalar servicio de Postfix en Cli y Srv
+      yum:
+        name: postfix
+        state: present
+    - name: Instalar servicio de BIND en Srv
+      yum:
+        name: bind
+        state: present
+    - name: Configurar BIND en Srv
+      template:
+        src: named.conf.j2
+        dest: /etc/named.conf
+      notify: restart bind
+
+- name: Configuración de servicios en Srv
+  hosts: srv
+  tasks:
+    - name: Configurar zonas en BIND
+      template:
+        src: zones.j2
+        dest: /var/named/zones.conf
+      notify: restart bind
+
+- name: Configuración de servicios en Cli y Srv
+  hosts: cli:srv
+  tasks:
+    - name: Instalar servicio de Apache
+      yum:
+        name: httpd
+        state: present
+
+- name: Configuración específica de Apache en Cli y Srv
+  hosts: cli:srv
+  tasks:
+    - name: Configurar VirtualHost para www.daw22.com en Cli
+      template:
+        src: daw22.com.conf.j2
+        dest: /etc/httpd/conf.d/www.daw22.com.conf
+      when: inventory_hostname == "cli"
+      notify: restart apache
+    - name: Configurar VirtualHost para www.empresa22.asix en Srv
+      template:
+        src: empresa22.asix.conf.j2
+        dest: /etc/httpd/conf.d/www.empresa22.asix.conf
+      when: inventory_hostname == "srv"
+      notify: restart apache
+
+- name: Reiniciar servicios necesarios
+  hosts: srv
+  tasks:
+    - name: Reiniciar servicio de BIND
+      service:
+        name: named
+        state: restarted
+    - name: Reiniciar servicio de Apache
+      service:
+        name: httpd
+        state: restarted
+
+handlers:
+  - name: restart bind
+    service:
+      name: named
+      state: restarted
+  - name: restart apache
+    service:
+      name: httpd
+      state: restarted
