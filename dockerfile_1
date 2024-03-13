@@ -1,0 +1,20 @@
+FROM ubuntu:latest
+
+# Actualizar e instalar paquetes necesarios
+RUN apt-get update && apt-get install -y apache2 certbot python3-certbot-apache
+
+# Exponer los puertos HTTP y HTTPS
+EXPOSE 80
+EXPOSE 443
+
+# Copiar la configuración de Apache2
+COPY apache2.conf /etc/apache2/apache2.conf
+
+# Directorio de trabajo
+WORKDIR /var/www/html
+
+# Copiar archivo de index HTML
+COPY index.html /var/www/html/index.html
+
+# Comando de inicio
+CMD ["apache2ctl", "-D", "FOREGROUND"]
