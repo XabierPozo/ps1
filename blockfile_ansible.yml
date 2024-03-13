@@ -1,0 +1,10 @@
+---
+- name: Modificar /etc/hostname
+  hosts: your_host_or_group_name
+  tasks:
+    - name: Modificar el archivo /etc/hostname
+      ansible.builtin.blockinfile:
+        path: /etc/hostname
+        block: |
+          patata
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - DO NOT EDIT THIS SECTION"
