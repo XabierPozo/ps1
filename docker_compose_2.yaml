@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  web1:
+    build:
+      context: web1
+      dockerfile: dockerfile
+    ports:
+      -81:80
+  mariadb:
+    container_name: X_Pozo_mariadb
+    image: mariadb
+    restart: always
+    ports:
+      - "9006:3306"
+    volumes:
+      - dades-db:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: docker_db
+      MYSQL_USER: Master
+      MYSQL_PASSWORD: 1234
+
+  postgresql:
+    container_name: X_Pozo_psql
+    image: postgres
+    restart: always
+    ports:
+      - "9032:5432"
+    environment:
+      POSTGRES_USER: Master
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: docker_db
+
+  phpmyadmin:
+    container_name: X_Pozo_myadmin
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - "9080:80"
+    environment:
+      PMA_HOST: mariadb
+      MYSQL_ROOT_PASSWORD: 1234
+
+volumes:
+  dades-db:
