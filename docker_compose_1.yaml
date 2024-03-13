@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  apache2:
+    build:
+      context: .
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./certs:/etc/letsencrypt
+    command: bash -c "certbot --apache --non-interactive --agree-tos --email your_email@example.com --domains yourdomain.com --redirect && apache2ctl -D FOREGROUND"
