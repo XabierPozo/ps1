@@ -1,0 +1,10 @@
+# Shell
+---
+- name: Ejecutar comandos en hosts
+  hosts: all
+  tasks:
+    - name: Agregar 'hola' al archivo hola.txt
+      ansible.builtin.shell: echo 'hola' >> hola.txt
+
+    - name: Mostrar el contenido de hola.txt
+      ansible.builtin.shell: cat hola.txt
