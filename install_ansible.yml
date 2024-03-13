@@ -1,0 +1,107 @@
+# Install modules
+---
+- hosts: all
+  become: yes
+  tasks:
+  - name: Actualizar paquetes
+    apt:
+      update_cache: yes
+
+  - name: Instalar Apache2
+    apt:
+      name: apache2
+      state: present
+      version: "{{ apache_version }}"
+
+  - name: Instalar Bind9
+    apt:
+      name: bind9
+      state: present
+      version: "{{ bind9_version }}"
+
+  - name: Instalar Postfix
+    apt:
+      name: postfix
+      state: present
+      version: "{{ postfix_version }}"
+
+  - name: Copiar archivo de configuración
+    copy:
+      src: "{{ config_file_path }}"
+      dest: /etc/apache2/sites-available/xabier_com.conf
+      owner: root
+      group: root
+      mode: 0644
+
+  - name: Habilitar sitio web
+    a2ensite:
+      name: xabier_com.conf
+
+  - name: Reiniciar Apache
+    service:
+      name: apache2
+      state: restarted
+
+---
+- name: Instalar apache2, bind9, postfix y copiar archivo de configuración
+  hosts: all
+  tasks:
+    - name: Instalar apache2, bind9, postfix
+      ansible.builtin.package:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - apache2
+        - bind9
+        - postfix
+      become: yes
+
+    - name: Copiar archivo de configuración de apache2
+      ansible.builtin.copy:
+        src: /ruta/a/tu/xabier_com.conf  # Cambia esta ruta por la ubicación real de tu archivo de configuración
+        dest: /etc/apache2/sites-available/xabier_com.conf
+      become: yes
+
+
+#
+#
+- name: Install ntpdate
+  ansible.builtin.package:
+    name: ntpdate
+    state: present
+
+# This uses a variable as this changes per distribution.
+- name: Remove the apache package
+  ansible.builtin.package:
+    name: "{{ apache }}"
+    state: absent
+
+- name: Install the latest version of Apache and MariaDB
+  ansible.builtin.package:
+    name:
+      - httpd
+      - mariadb-server
+    state: latest
+
+#
+#
+#
+---
+- name: Instalar apache2, bind9, postfix y copiar archivo de configuración
+  hosts: all
+  tasks:
+    - name: Instalar apache2, bind9, postfix
+      ansible.builtin.package:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - apache2
+        - bind9
+        - postfix
+      become: yes
+
+    - name: Copiar archivo de configuración de apache2
+      ansible.builtin.copy:
+        src: /ruta/a/tu/xabier_com.conf  # Cambia esta ruta por la ubicación real de tu archivo de configuración
+        dest: /etc/apache2/sites-available/xabier_com.conf
+      become: yes
